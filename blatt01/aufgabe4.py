@@ -1,5 +1,4 @@
 import numpy as np
-from math import log
 
 
 def integral_trapez(n, a, b, f):
@@ -15,10 +14,11 @@ def f(x):
 
 
 def g(x):
-    return log(x)
+    return np.log(x)
 
 
 n = 1000
+
 a = 0.1
 b = 10
 int_f_trapez = integral_trapez(n, a, b, f)
@@ -29,6 +29,6 @@ print("trapez = %f, exakt = %f" % (int_f_trapez, int_f_exakt))
 a = 1
 b = 2
 int_g_trapez = integral_trapez(n, a, b, g)
-int_g_exakt = log(4) - 1
+int_g_exakt = np.log(4) - 1
 print("n = %d; int_a^b g:" % n)
 print("trapez = %f, exakt = %f" % (int_g_trapez, int_g_exakt))
