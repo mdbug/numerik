@@ -5,8 +5,9 @@ def sqrt_taylor(n, x, y_0=1):
     x_0 = y_0**2
     y = y_0
     a = y
+    factor = x/x_0 - 1
     for k in range(1, n + 1):
-        a *= (3 / (2 * k) - 1) * (x / x_0 - 1)
+        a *= (3 / (2 * k) - 1) * factor
         y += a
 
     return y
