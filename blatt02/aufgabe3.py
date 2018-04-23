@@ -25,6 +25,26 @@ def diagonalmatrix(d1: array, d2: array) -> array:
     return mat
 
 
+def vorwaerts(lu: array, x: array) -> array:
+    y = copy(x)
+    for i in range(x.size):
+        for j in range(i):
+            y[i] -= lu[i, j]*y[j]
+
+    return y
+
+
+def rueckwaerts(lu: array, x: array) -> array:
+    y = copy(x)
+    for i in reversed(range(x.size)):
+        for j in range(i + 1, x.size):
+            y[i] -= lu[i, j] * y[j]
+
+        y[i] /= lu[i, i]
+
+    return y
+
+
 for n in [100, 1000, 10000]:
     print("n = %d" % n)
 
