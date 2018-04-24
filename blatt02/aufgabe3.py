@@ -1,4 +1,4 @@
-from numpy import array, zeros, sqrt, copy
+from numpy import array, zeros, sqrt, copy, transpose
 
 
 def cholesky(d1: array, d2: array) -> (array, array):
@@ -15,6 +15,10 @@ def cholesky(d1: array, d2: array) -> (array, array):
 
 
 def diagonalmatrix(d1: array, d2: array) -> array:
+    """
+    Erstellt eine Matrix aus zwei Vektoren,
+    welche die Haupt und eine Nebendiagonale repraesentieren
+    """
     mat = zeros([d1.shape[0], d1.shape[0]])
     for i in range(d1.shape[0]):
         mat[i, i] = d1[i]
@@ -48,14 +52,19 @@ def rueckwaerts(lu: array, x: array) -> array:
 for n in [100, 1000, 10000]:
     print("n = %d" % n)
 
+    # Initialisiere b
+    b = array([-1.0] * n)
+    b *= 1 / (n + 1)**2
+
     # Initialisiere Diagonalen
     d1 = array([2.0] * n)
     d2 = array([-1.0] * (n - 1))
 
     l_d1, l_d2 = cholesky(d1, d2)
-    print("Hauptdiagonale")
-    print(l_d1)
-    print("Nebendiagonale 1")
-    print(l_d2)
+    l = diagonalmatrix(l_d1, l_d2)
+    y = vorwaerts(l, b)
+    x = rueckwaerts(transpose(l), y)
+
+    print(x)
     print("-" * 20)
 
