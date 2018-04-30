@@ -33,15 +33,14 @@ def zerlegung_pivot(a: array) -> (array, array):
     n = a.shape[0]
     p = zeros(n-1, dtype=int)
     for i in range(n - 1):
-        mx = i
-        # find pivot
+        max_zeile = i
         for k in range(i + 1, n):
-            if abs(lu[k, i]) > abs(lu[mx, i]):
-                mx = k
+            if abs(lu[k, i]) > abs(lu[max_zeile, i]):
+                max_zeile = k
 
-        p[i] = mx + 1
-        if mx != i:
-            swap_rows(lu, i, mx)
+        p[i] = max_zeile + 1
+        if max_zeile != i:
+            swap_rows(lu, i, max_zeile)
 
         for j in range(i + 1, n):
             assert lu[i, i] != 0
@@ -82,31 +81,6 @@ def rueckwaerts(lu: array, x: array) -> array:
     return y
 
 
-# a = array([
-#     [0., 0, 0, 1],
-#     [2, 1, 2, 0],
-#     [4, 4, 0, 0],
-#     [2, 3, 1, 0]])
-#
-# b1 = array([3., 5, 4, 5])
-# b2 = array([4., 10, 12, 11])
-#
-# lu, p = zerlegung_pivot(a)
-#
-# pb1 = permutation(p, b1)
-# pb2 = permutation(p, b2)
-#
-# y1 = vorwaerts(lu, pb1)
-# y2 = vorwaerts(lu, pb2)
-#
-# x1 = rueckwaerts(lu, y1)
-# x2 = rueckwaerts(lu, y2)
-#
-# print(x1)
-# print(x2)
-# print("")
-#
-
 beta = 10.0
 for n in [10, 15, 20]:
     print("n = %d" % n)
@@ -139,5 +113,7 @@ for n in [10, 15, 20]:
 
     print("Loesung mit Spaltenpivot")
     print(x)
+
+    print("-"*50)
 
 
