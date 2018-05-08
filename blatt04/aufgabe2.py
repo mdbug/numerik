@@ -1,4 +1,5 @@
-from numpy import copy, array, zeros
+from numpy import array, ones, sign, inf, argmax, absolute, zeros, copy
+from numpy.linalg import norm, cond
 
 
 def swap_rows(matrix: array, row_1: int, row_2: int):
@@ -10,7 +11,7 @@ def swap_rows(matrix: array, row_1: int, row_2: int):
 def zerlegung_pivot(a: array) -> (array, array):
     lu = array(a, copy=True)
     n = a.shape[0]
-    p = zeros(n-1, dtype=int)
+    p = zeros(n - 1, dtype=int)
     for i in range(n - 1):
         max_zeile = i
         for k in range(i + 1, n):
@@ -25,7 +26,7 @@ def zerlegung_pivot(a: array) -> (array, array):
             assert lu[i, i] != 0
             lu[j, i] /= lu[i, i]
             for k in range(i + 1, n):
-                lu[j, k] -= (lu[j, i]*lu[i, k])
+                lu[j, k] -= (lu[j, i] * lu[i, k])
 
     return lu, p
 
@@ -44,7 +45,7 @@ def vorwaerts(lu: array, x: array) -> array:
     y = copy(x)
     for i in range(x.size):
         for j in range(i):
-            y[i] -= lu[i, j]*y[j]
+            y[i] -= lu[i, j] * y[j]
 
     return y
 
@@ -71,19 +72,7 @@ def rueckwaerts(lu: array, x: array) -> array:
     return y
 
 
-def berechne_v(lu: array, c: array) -> array:
-    return vorwaerts2(lu.T, c)
-
-
-def berechne_w(lu: array, v: array) -> array:
-    l = copy(lu)
-    for i in range(l.shape[0]):
-        l[i, i] = 1.0
-
-    return rueckwaerts(l.T, v)
-
-
-def berechne_z(p: array, w: array) -> array:
+def permutation_rueckwaerts(p: array, w: array) -> array:
     z = copy(w)
     for i in reversed(range(z.size - 1)):
         tmp = z[i]
@@ -93,18 +82,43 @@ def berechne_z(p: array, w: array) -> array:
     return z
 
 
-def loese(a: array, c: array) -> array:
+def hager(lu: array, p: array) -> array:
+    n = lu.shape[0]
+    x = ones(n, dtype=float) / n
+
+    for i in range(5):
+        v = vorwaerts2(lu.T, x)
+
+        l = copy(lu)
+        for i in range(l.shape[0]):
+            l[i, i] = 1.0
+
+        w = rueckwaerts(l.T, v)
+        y = permutation_rueckwaerts(p, w)
+        xi = sign(y)
+
+        v = vorwaerts(lu, permutation(p, xi))
+        z = rueckwaerts(lu, v)
+        if norm(z, inf) <= z.T.dot(x):
+            break
+        j = argmax(absolute(z))
+        x = zeros(n)
+        x[j] = 1
+
+    return norm(y, 1)
+
+
+for delta in [10 ** -8, 10 ** -10, 10 ** -12]:
+    a = array([[3, 2, 1],
+               [2, 2 * delta, 2 * delta],
+               [1, 2 * delta, -delta]], dtype=float)
+
     lu, p = zerlegung_pivot(a)
-    v = berechne_v(lu, c)
-    w = berechne_w(lu, v)
-    return berechne_z(p, w)
-
-
-a = array([[0, 0, 0, 1],
-           [2, 1, 2, 0],
-           [4, 4, 0, 0],
-           [2, 3, 1, 0]], dtype=float)
-
-c = array([152, 154, 56, 17], dtype=float)
-
-print(loese(a, c))
+    hag = hager(lu, p)
+    norm_a = norm(a, inf)
+    print("delta: %e" % delta)
+    print("Hager: %f " % hag)
+    print("Zeilensummennorm A: %f" % norm_a)
+    print("Kondition A: %f " % (norm_a * hag))
+    print("numpy.linalg.cond(A): %f " % cond(a, inf))
+    print("")
