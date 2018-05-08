@@ -9,7 +9,7 @@ from numpy import copy, array, zeros
 import numpy as np
 
 #Das Householder-Verfahren wird auf die Matrix A angewendet
-def householder(A):
+def householder(A: array) -> (array, array):
     n = len(A[0])
     diagonale = np.empty(n)
     QR = copy(A)
@@ -34,7 +34,7 @@ def householder(A):
 
 #Q_i wird mit n als Dimenion der Matrix, dem aktuellen Iterationsschritt i,
 #dem Diagonalelement d und dem Vektor v bestimmt
-def getQ_i(n, i, d, v):
+def getQ_i(n: int, i: int, d: int, v: array) -> array:
     v_1 = v[0]
     Q_i = np.eye(n - i) + ((1. /  (v_1 * d)) * (np.multiply(v, v.reshape(n - i, 1))))
     if i > 0:
@@ -48,7 +48,7 @@ def getQ_i(n, i, d, v):
 
 #Das y der Gleichung Qy = b wird über die durch das Householder-Verfahren bestimmte
 #Matrix QR, Diagonale diagonale und dem gegebenen Vektor b bestimmt
-def getY(QR, diagonale, b):
+def getY(QR: array, diagonale: array, b: array) -> array:
     n = len(diagonale)
     y = copy(b)
     for i in range(n-1):
@@ -61,7 +61,7 @@ def getY(QR, diagonale, b):
 
 #Das R des Householder-Verfahrens wird über die durch das Householder-Verfahren bestimmte
 #Matrix QR und die Diagonale diagonale bestimmt
-def getR(QR, diagonale):
+def getR(QR: array, diagonale: array) -> array:
     n = len(diagonale)
     R = triu(QR, 1)
     for i in range(n):
@@ -72,14 +72,27 @@ def getR(QR, diagonale):
 
 
 #Das LGS Rx = y wird mit der Matrix R und dem Vektor y nach x gelöst
-def getX(R, y):
-    return np.linalg.solve(R, y)
+def getX(R: array, y: array) -> array:
+    return rueckwaerts(R, y)
+
+
+
+
+def rueckwaerts(lu: array, x: array) -> array:
+    y = copy(x)
+    for i in reversed(range(x.size)):
+        for j in range(i + 1, x.size):
+            y[i] -= lu[i, j] * y[j]
+
+        y[i] /= lu[i, i]
+
+    return y
 
     
     
 
 #Die Matrix A zum testen wird mit der Dimension n erstellt
-def getA(n):
+def getA(n: int) -> array:
     A = np.eye(n)
     for i in range(n):
         for j in range(n):
@@ -96,7 +109,7 @@ def getA(n):
 
 
 #Der Vektor b zum testen wird mit der Dimension n erstellt
-def getB(n):
+def getB(n: int) -> array:
     b = np.empty([n])
     for i in range(n):
         if i != n-1:
@@ -108,6 +121,7 @@ def getB(n):
     return b
 
     
+######################Tests###################################
 
 #A = array([[20, 18, 44],[0, 40, 45],[-15, 24, -108]], dtype=float)
 #b = array([-4, -45, 78], dtype=float)
