@@ -71,7 +71,7 @@ def loesung(a: array, b: array) -> array:
 def nachiteration(a: array, b: array, lu: array, x: array, n: int) -> array:
     x_k = copy(x)
     for k in range(n):
-        r = b - a.dot(x)
+        r = b - a.dot(x_k)
         p = rueckwaerts(lu, vorwaerts(lu, r))
         x_k += p
 
