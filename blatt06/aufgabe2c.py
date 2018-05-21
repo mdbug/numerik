@@ -4,8 +4,7 @@ from pylab import *
 def newton(f, ff, x0, alpha):
     x = x0
     while True:
-        fx = f(x)
-        x_neu = x - fx/ff(x)
+        x_neu = x - f(x)/ff(x)
         if alpha/(1-alpha)*abs(x_neu - x) < 1.0e-6:
             return x_neu
 
