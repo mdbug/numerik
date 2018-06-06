@@ -1,4 +1,4 @@
-from math import fabs, pi
+from pylab import *
 
 
 def trapez(f, a, b, m):
@@ -22,20 +22,35 @@ def simpson(f, a, b, m):
     return l/3*ret
 
 
+def g_2(f, a, b):
+    x = array([-sqrt(3/5), 0, sqrt(3/5)])
+    beta = array([5/9, 8/9, 5/9])
+    x_tilde = (b - a)/2 * x + (b - a)/2
+    beta_tilde = (b - a)/2 * beta
+    return beta_tilde.dot(f(x_tilde))
+
+
 def f(x):
     return 1/(1+x**2)
 
 
+a = 0
+b = 1
 print("Trapez:")
-t = trapez(f, 0, 1, 8)
+t = trapez(f, a, b, 8)
 print(t)
 print("Absoluter Fehler:")
 print(fabs(t - pi/4))
 print("====================")
-print("Simpson")
-s = simpson(f, 0, 1, 8)
+print("Simpson:")
+s = simpson(f, a, b, 4)
 print(s)
 print("Absoluter Fehler:")
 print(fabs(s - pi/4))
-
+print("====================")
+print("Gauß G_2:")
+g = g_2(f, a, b)
+print(g)
+print("Absoluter Fehler:")
+print(fabs(g - pi/4))
 
