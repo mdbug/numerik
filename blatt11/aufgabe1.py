@@ -39,13 +39,12 @@ def levenberg_marquardt(x0, my0, delta):
     p = np.linalg.solve(d2f(x) + my * i, -df(x))
     x_neu = x + p
     rho = (f(x) - f(x_neu))/(q(x, x) - q(x_neu, x))
-    print(rho)
     if rho > delta and delta > 0:
         x = x_neu
         my = my * max(1/3, 1 - (2 * rho - 1) ** 3)
     elif rho <= delta:
         my = 2 * my
-    return 0
+    return x
 
 
 def is_spd(x):
@@ -62,4 +61,5 @@ for startpukt in [(5,2), (6,2), (-1,-1), (-2,-2)]:
     print("Startpunkt: (%f, %f)" % tuple(x0))
     print(d2f(x0))
     print("")
-    levenberg_marquardt(x0, 1, 10 ** (-3))
+    x = levenberg_marquardt(x0, 1, 10e-3)
+    print(x)
