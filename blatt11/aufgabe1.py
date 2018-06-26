@@ -18,16 +18,16 @@ def f(x):
 
 def df(x):
     df = [2*np.cos(x[0]) * (np.sin(x[0]) - x[1]) - 2*(np.exp(-x[1]) - x[0]), (-2*np.exp(-x[1])*(np.exp(-x[1]) - x[0]) - 2 * (np.sin(x[0]) - x[1]))]
-    return array(df, dtype=float)
+    return np.array(df, dtype=float)
 
 def d2f(x):
     d2f11 = -2 * np.sin(x[0]) * (np.sin(x[0])-x[1])+2*np.cos(x[0]) ** 2 + 2
     d2f22 = 2 * np.exp(-2 * x[1]) * (np.exp(2 * x[1]) - x[0] *np.exp(x[1]) + 2)
     d2f12 = 2*np.exp(-x[1]) - 2 * np.cos(x[0])
-    return array([[d2f11, d2f12], [d2f12, d2f22]], dtype=float)
+    return np.array([[d2f11, d2f12], [d2f12, d2f22]], dtype=float)
 
-def q(x):
-    return f(x) + df(x).T * (x[1] - x[0]) + (1/2) * (x[1] - x[0]).T * (d2f[x]) * (x[1] - x[0])
+def q(y, x):
+    return f(x) + df(x).T.dot((y - x)) + (1/2) * (y - x).T.dot((d2f(x))).dot((y - x))
 
 def levenberg_marquardt(x0, my0, delta):
     x = x0
@@ -38,8 +38,9 @@ def levenberg_marquardt(x0, my0, delta):
         
     p = np.linalg.solve(d2f(x) + my * i, -df(x))
     x_neu = x + p
-    rho = (f(x) - f(x_neu))/(q(x) - q(x_neu))
-    if rho > delta & delta > 0:
+    rho = (f(x) - f(x_neu))/(q(x, x) - q(x_neu, x))
+    print(rho)
+    if rho > delta and delta > 0:
         x = x_neu
         my = my * max(1/3, 1 - (2 * rho - 1) ** 3)
     elif rho <= delta:
