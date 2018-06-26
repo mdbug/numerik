@@ -26,8 +26,10 @@ def d2f(x):
     d2f12 = 2*np.exp(-x[1]) - 2 * np.cos(x[0])
     return array([[d2f11, d2f12], [d2f12, d2f22]], dtype=float)
 
+def q(x):
+    return f(x) + df(x).T * (x[1] - x[0]) + (1/2) * (x[1] - x[0]).T * (d2f[x]) * (x[1] - x[0])
 
-def levenberg_marquardt(x0, my0):
+def levenberg_marquardt(x0, my0, delta):
     x = x0
     my = my0
     i = np.identity(2) 
@@ -35,8 +37,13 @@ def levenberg_marquardt(x0, my0):
         my = my * 2
         
     p = np.linalg.solve(d2f(x) + my * i, -df(x))
-    x = x + p
-    print(x)
+    x_neu = x + p
+    rho = (f(x) - f(x_neu))/(q(x) - q(x_neu))
+    if rho > delta & delta > 0:
+        x = x_neu
+        my = my * max(1/3, 1 - (2 * rho - 1) ** 3)
+    elif rho <= delta:
+        my = 2 * my
     return 0
 
 
@@ -54,4 +61,4 @@ for startpukt in [(5,2), (6,2), (-1,-1), (-2,-2)]:
     print("Startpunkt: (%f, %f)" % tuple(x0))
     print(d2f(x0))
     print("")
-    levenberg_marquardt(x0, 1)
+    levenberg_marquardt(x0, 1, 10 ** (-3))
